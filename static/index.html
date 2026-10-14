@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f5ef">
+    <meta name="description" content="Run Strands Decider locally to play Snake and inspect each decision.">
+    <title>Snake with Strands Decider</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2325392d'/%3E%3Cpath d='M8 22V12h16' fill='none' stroke='%23c5ef73' stroke-width='7' stroke-linecap='round'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/app.js" defer></script>
+  </head>
+  <body>
+    <main class="shell">
+      <header class="site-header">
+        <a class="brand" href="/" aria-label="Snake home">
+          <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8"/><path d="M8 23V12h16"/></svg>
+          <span>Strands<span class="brand-light"> / playground</span></span>
+        </a>
+        <div id="model-badge" class="model-badge"><span class="status-dot"></span><span id="model-label">Loading model</span></div>
+      </header>
+
+      <section class="intro">
+        <div>
+          <p class="eyebrow">Local gameplay <span>·</span> Strands Decider</p>
+          <h1>Strands Decider<br>plays Snake<span class="title-dot">.</span></h1>
+        </div>
+        <p class="intro-copy">Use Step to inspect one move,<br>or Start game to let the model play.</p>
+      </section>
+
+      <section class="model-selector" aria-label="Local model">
+        <div class="model-controls">
+          <label for="model-select">Local model</label>
+          <select id="model-select" aria-describedby="model-note model-switch-note" disabled>
+            <option>Loading model choices…</option>
+          </select>
+          <button id="load-model" class="button secondary" disabled>Load model</button>
+        </div>
+        <p id="model-note">Checking available models.</p>
+        <p id="model-switch-note">Loading a different model starts a new round. One model runs at a time.</p>
+      </section>
+
+      <div class="playground">
+        <section class="game-card" aria-label="Snake game">
+          <div class="game-topline">
+            <div class="section-label"><span class="tiny-grid" aria-hidden="true">▦</span> Game board <span class="muted">12 × 12</span></div>
+            <span id="game-status" class="game-status" role="status">Getting ready</span>
+          </div>
+          <div class="scoreboard">
+            <div><span class="metric-label">Food eaten</span><strong id="score">00</strong></div>
+            <div><span class="metric-label">Moves</span><strong id="moves">000</strong></div>
+            <div><span class="metric-label">Length</span><strong id="length">03</strong></div>
+            <div class="board-legend"><span><i class="snake-dot"></i> Snake</span><span><i class="food-dot"></i> Food</span></div>
+          </div>
+          <div class="arena">
+            <canvas id="board" width="720" height="720" role="img" aria-label="Snake board, waiting for game state"></canvas>
+            <div id="board-message" class="board-message">
+              <span class="message-kicker" id="message-kicker">Getting started</span>
+              <strong id="message-title">Loading the model</strong>
+              <span id="message-copy">Model files download on first use.</span>
+            </div>
+            <span class="arena-corner" aria-hidden="true">↑ Up · Right →</span>
+          </div>
+          <div class="controls">
+            <button id="play" class="button primary" disabled><span id="play-icon" aria-hidden="true">▶</span><span id="play-label">Start game</span></button>
+            <button id="step" class="button secondary" disabled><span aria-hidden="true">↦</span> Step</button>
+            <button id="reset" class="button reset"><span aria-hidden="true">↺</span> Reset</button>
+          </div>
+          <div class="pace-control">
+            <label for="pace">Pause between moves</label>
+            <input id="pace" type="range" min="100" max="1500" step="100" value="400" title="Viewing time added after each decision. The model's response time is separate.">
+            <output id="pace-value" for="pace">0.4s</output>
+          </div>
+          <p id="control-note" class="control-note">Strands Decider chooses every move. Use Step for one decision or Start game for continued play.</p>
+        </section>
+
+        <aside class="inspector" aria-label="Model decision">
+          <section class="decision-card">
+            <div class="panel-heading"><h2>Model decision</h2><span id="decision-number" class="counter">No decision yet</span></div>
+            <p class="panel-copy">The model chooses a direction from the current board state.</p>
+            <div class="choice-summary">
+              <div id="choice-arrow" class="choice-arrow" aria-hidden="true">↗</div>
+              <div><span class="metric-label" id="choice-label">Next direction</span><strong id="choice">Waiting to play</strong><span id="choice-detail">Select Step or Start game to begin.</span></div>
+            </div>
+            <div class="probability-heading"><span class="metric-label">Choice probabilities</span><span class="metric-label">0 to 100%</span></div>
+            <div class="probabilities">
+              <div class="probability-row" data-direction="UP"><span class="direction-icon">↑</span><span class="direction-name">Up</span><div class="bar-track"><div class="bar-fill"></div></div><span class="probability">N/A</span></div>
+              <div class="probability-row" data-direction="RIGHT"><span class="direction-icon">→</span><span class="direction-name">Right</span><div class="bar-track"><div class="bar-fill"></div></div><span class="probability">N/A</span></div>
+              <div class="probability-row" data-direction="DOWN"><span class="direction-icon">↓</span><span class="direction-name">Down</span><div class="bar-track"><div class="bar-fill"></div></div><span class="probability">N/A</span></div>
+              <div class="probability-row" data-direction="LEFT"><span class="direction-icon">←</span><span class="direction-name">Left</span><div class="bar-track"><div class="bar-fill"></div></div><span class="probability">N/A</span></div>
+            </div>
+            <div class="decision-metrics">
+              <div><span class="metric-label">Confidence</span><strong id="confidence">N/A<small hidden>%</small></strong></div>
+              <div><span class="metric-label">Decision time</span><strong id="latency">N/A<small hidden>ms</small></strong></div>
+            </div>
+            <p class="confidence-note">Confidence shows the model's certainty. It does not guarantee a safe move.</p>
+          </section>
+
+          <section class="history-card">
+            <div class="panel-heading"><h2>Recent moves</h2><span class="metric-label">Latest →</span></div>
+            <div id="history" class="history" aria-label="Recent model choices"><span class="history-empty">No moves yet.</span></div>
+            <div class="progress-readout">
+              <div><span class="metric-label">Moves since food</span><strong id="foodless">0</strong></div>
+              <div><span class="metric-label">Revisits here</span><strong id="revisits">0</strong></div>
+            </div>
+            <p class="memory-note">The model sees the full board and recent moves. Revisits count earlier visits to this square within the last 64 head positions since food changed.</p>
+          </section>
+
+          <section class="model-card">
+            <div class="model-symbol" aria-hidden="true">✳</div>
+            <div><h2 id="model-name">Hobson v21 · 2B</h2><p id="model-device">Local inference · preparing device</p><a href="https://huggingface.co/StrandsAgents/strands-decider-2B-hobson-v21" target="_blank" rel="noreferrer" id="model-link">View model card <span aria-hidden="true">↗</span></a></div>
+          </section>
+          <details class="observation-card">
+            <summary>What the model saw <span aria-hidden="true">+</span></summary>
+            <pre id="observation">The board state sent for the latest decision will appear here.</pre>
+          </details>
+          <div id="error" class="error" role="alert" hidden></div>
+        </aside>
+      </div>
+
+      <footer><span><span class="footer-dot"></span> Runs locally on your computer.</span><span>Built with Strands Decider</span></footer>
+    </main>
+  </body>
+</html>

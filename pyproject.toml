@@ -1,0 +1,31 @@
+[project]
+name = "strands-decider-gameplay"
+version = "0.3.0"
+description = "Watch Strands Decider play Snake, one decision at a time."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    "fastapi>=0.115,<1",
+    "uvicorn>=0.30,<1",
+    "strands-decider @ git+https://github.com/strands-labs/strands-decider@8b6faa553038a59e73fa7f16c4081f8ceb21d27e",
+    "transformers==5.17.0",
+]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28,<1",
+    "pytest>=8,<10",
+    "ruff>=0.11,<1",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
